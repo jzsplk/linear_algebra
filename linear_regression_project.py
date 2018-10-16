@@ -49,10 +49,10 @@ C = [[1],
      [3]]
 
 #TODO 创建一个 4*4 单位矩阵
-I = [[1, 2, 3, 4],
-    [2, 3, 4, 6],
-    [4, 6, 8, 11],
-    [7, 6, 3, 1]]
+I = [[1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1]]
 
 
 # ## 1.2 返回矩阵的行数和列数
@@ -102,8 +102,13 @@ get_ipython().run_line_magic('run', '-i -e test.py LinearRegressionTestCase.test
 
 
 # TODO 计算矩阵的转置
+# review问题1: zip的作用： 函数用于将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的列表。
+# 如果各个迭代器的元素个数不一致，则返回列表长度与最短的对象相同，利用 * 号操作符，可以将元组解压为列表
+
+# review问题2: 作为实际参数传递的*的作用是什么？它与函数定义时写在形式参数中的*有什么不同？
+# 函数定义时形式参数中*表示参数不定，这里的*用于将元组解压
 def transpose(M):
-    return list(zip(*M))
+    return [list(t) for t in list(zip(*M))]
 
 
 # In[8]:
@@ -620,7 +625,20 @@ print(calculateMSE2D(X,Y,m1,b1))
 返回：线性回归的系数(如上面所说的 m, b)
 '''
 def linearRegression2D(X,Y):
-    return 0.,0.
+    # 组装X,Y为矩阵
+    X = [[x, 1] for x in X]
+    Y = [[y] for y in Y]
+    # transpose X
+    X_T = transpose(X)
+    
+    XtX = matxMultiply(X_T, X) # X_T * X
+    XtY = matxMultiply(X_T, Y) # X_T * Y
+    result = gj_Solve(XtX, XtY)  # Gaussian Jordan 消元法
+    
+    return [v[0] for v in result]
+
+m,b = linearRegression2D(X,Y)
+print(m,b)
 
 
 # In[27]:
